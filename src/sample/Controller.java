@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -33,8 +34,8 @@ import static java.lang.Integer.parseInt;
 
 public class Controller implements Initializable {
 
-    int MemorySize = 12000;
-    int NumberOfProcesses = 0;
+    int MemorySize = 1200;
+    int NumberOfProcesses = 3;
     int NumberOfHoles = 0;
 
     public GanttChart<Number, String> chart;
@@ -43,8 +44,20 @@ public class Controller implements Initializable {
 
     ArrayList<CPUProcess> Processes = new ArrayList<>();
     ArrayList<Hole> Holes = new ArrayList<>();
-    String[] colors = new String[]{"status-red", "status-green", "status-blue", "status-tomato",
-            "status-violet", "status-purple", "status-yellow", "status-brown", "status-black","status-purple2"};
+    String[] colors = new String[]{"status-yellow", "status-aqua",
+            "status-orange", "status-deeppink","status-teal",
+            "status-purple", "status-green", "status-deepskyblue",
+            "status-tomato", "status-violet"};
+
+    CPUProcess A = new CPUProcess(0,120,"First-Fit",60);
+    CPUProcess B = new CPUProcess(1,120,"First-Fit",200);
+    CPUProcess C = new CPUProcess(2,120,"First-Fit",380);
+
+    Hole AA = new Hole (180,10);
+    Hole BB = new Hole (320,30);
+    Hole CC = new Hole (360,15);
+
+
 
     @FXML VBox RootVBox;
     @FXML HBox ChartHBox;
@@ -61,11 +74,21 @@ public class Controller implements Initializable {
     @FXML ChoiceBox TypeOfAllocChoiceBox;
 
     public void initialize(URL location, ResourceBundle resources){
+
+        Processes.add(A);
+        Processes.add(B);
+        Processes.add(C);
+        Holes.add(AA);
+        Holes.add(BB);
+        Holes.add(CC);
+
         initializeInputButton();
         initializeProcessAllocateButton();
+        initializeProcessDeallocateButton();
         initializeHoleAllocateButton();
         initializeTypeOfAllocChoiceBox();
         initializeProcessesTable();
+        initializeHolesTable();
         initializeGanttChart();
         buildGanttChart();
     }
@@ -78,6 +101,7 @@ public class Controller implements Initializable {
                     MemorySize = parseInt(MemorySizeTextField.getText());
                     NumberOfProcesses = parseInt(NumberOfProcessesTextField.getText());
                     NumberOfHoles = parseInt(NumberOfHolesTextField.getText());
+                    buildGanttChart();
                 }
                 catch (NumberFormatException e){
                     System.out.println("Must Enter All Three Input Data.");
@@ -96,10 +120,15 @@ public class Controller implements Initializable {
                     ///ProcessID
                     hole.setSize(parseInt(HoleSizeTextField.getText()));
                     hole.setStartAddress(parseInt(HoleStartAddressTextField.getText()));
+                    Holes.add(hole);
+                    HolesTable.getItems().add(hole);
+                    buildGanttChart();
                 }
                 catch (NumberFormatException e){
                     System.out.println("Must Enter All Hole Data.");
                 }
+                HoleSizeTextField.clear();
+                HoleStartAddressTextField.clear();
             }
         });
 
@@ -111,19 +140,35 @@ public class Controller implements Initializable {
                 CPUProcess process = new CPUProcess();
 
                 try {
-                    ///ProcessID
+                    process.setId(NumberOfProcesses);
                     process.setSize(parseInt(ProcessSizeTextField.getText()));
                     process.setTypeOfAlloc(TypeOfAllocChoiceBox.getValue().toString());
+                    NumberOfProcesses++;
+
+                    ProcessesTable.getItems().add(process);
+                    Processes.add(process);
+                    buildGanttChart();
                 }
                 catch (NumberFormatException e){
                     System.out.println("Must Enter All Process Data.");
                 }
-
-                Processes.add(process);
-
+                ProcessSizeTextField.clear();
             }
         });
 
+    }
+    public void initializeProcessDeallocateButton(){
+        ProcessDeallocateButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                ObservableList<CPUProcess> processSelected, allProcesses;
+                allProcesses = ProcessesTable.getItems();
+                processSelected = ProcessesTable.getSelectionModel().getSelectedItems();
+                processSelected.forEach(allProcesses::remove);
+                processSelected.forEach(Processes::remove);
+                buildGanttChart();
+            }
+        });
     }
 
     public void initializeTypeOfAllocChoiceBox(){
@@ -138,19 +183,43 @@ public class Controller implements Initializable {
         ProcessSizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
         ProcessTypeOfAllocColumn.setCellValueFactory(new PropertyValueFactory<>("typeOfAlloc"));
 
+        ObservableList<CPUProcess> observableArrayList =
+                FXCollections.observableArrayList(Processes);
+        ProcessesTable.setItems(observableArrayList);
+    }
+    public void initializeHolesTable(){
+
+        //table.setItems(getProcesses());
+
+
+        HoleSizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
+        HoleStartAddressColumn.setCellValueFactory(new PropertyValueFactory<>("startAddress"));
+
+        ObservableList<Hole> observableArrayList =
+                FXCollections.observableArrayList(Holes);
+        HolesTable.setItems(observableArrayList);
+
     }
     private void buildGanttChart() {
         chart.getData().clear();
-        ChartHBox.setMaxWidth(RootVBox.getWidth() - 300);
-        ChartHBox.setMinWidth(RootVBox.getWidth() - 300);
-        chart.setMinWidth(RootVBox.getWidth() - 300);
-        chart.setMaxWidth(RootVBox.getWidth());
+        //ChartHBox.setMaxWidth(RootVBox.getWidth() - 300);
+        //ChartHBox.setMinWidth(RootVBox.getWidth() - 300);
+        //chart.setMinWidth(RootVBox.getWidth() - 300);
+        //chart.setMaxWidth(RootVBox.getWidth());
 
         XYChart.Series series = new XYChart.Series();
-        xAxis.setUpperBound(100);
-
+        xAxis.setUpperBound(MemorySize);
         series.getData().add(new XYChart.Data(0, "",
-                new ExtraData((int) 50, colors[0])));
+                new ExtraData((int) MemorySize, "status-gray")));
+
+        for(int i=0; i<Processes.size(); i++){
+            series.getData().add(new XYChart.Data(Processes.get(i).getStartAddress(), "",
+                    new ExtraData((int) Processes.get(i).getSize(), colors[i%10])));
+        }
+        for(int i=0; i<Holes.size(); i++){
+            series.getData().add(new XYChart.Data(Holes.get(i).getStartAddress(), "",
+                    new ExtraData((int) Holes.get(i).getSize(), "status-lavender")));
+        }
         chart.getData().add(series);
     }
     private void initializeGanttChart() {
@@ -189,9 +258,9 @@ public class Controller implements Initializable {
         ChartHBox.getChildren().add(chart);
 
         ChartHBox.setMaxWidth(700);
-        ChartHBox.setMaxWidth(RootVBox.getMaxWidth());
+        //ChartHBox.setMaxWidth(RootVBox.getMaxWidth());
         chart.setMinWidth(700);
-        chart.setMaxWidth(RootVBox.getMaxWidth());
+        //chart.setMaxWidth(RootVBox.getMaxWidth());
         chart.setLegendVisible(false);
     }
 
