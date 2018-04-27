@@ -1,8 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.GridPane?>
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<GridPane fx:controller="sample.Controller"
-          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
-</GridPane>
+
+
+<VBox fx:controller="sample.Controller" fx:id="RootVBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="730.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="350.0" prefWidth="750.0">
+         <children>
+            <VBox maxWidth="-Infinity" prefHeight="270.0" prefWidth="200.0">
+               <children>
+                  <HBox prefHeight="100.0" prefWidth="200.0" />
+                  <HBox prefHeight="4.0" prefWidth="200.0">
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="100.0" text="Memory Size:">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="MemorySizeTextField" prefHeight="25.0" prefWidth="80.0">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="6.0" prefWidth="200.0">
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="100.0" text="No. of Processes:">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="NumberOfProcessesTextField" prefWidth="80.0">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="9.0" prefWidth="200.0">
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="100.0" text="No. of Holes">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <TextField fx:id="NumberOfHolesTextField" prefHeight="25.0" prefWidth="80.0">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                  </HBox>
+                  <Button fx:id="InputButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Input">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="65.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox prefHeight="270.0" prefWidth="310.0">
+               <children>
+                  <TableView maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0">
+                    <columns>
+                      <TableColumn fx:id="ProcessIdColumn" prefWidth="100.0" text="Process ID" />
+                      <TableColumn fx:id="ProcessSizeColumn" prefWidth="100.0" text="Process Size" />
+                        <TableColumn fx:id="TypeOfAllocColumn" prefWidth="100.0" text="Type of Alloc" />
+                    </columns>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                     </VBox.margin>
+                  </TableView>
+                  <HBox prefHeight="32.0" prefWidth="310.0">
+                     <children>
+                        <HBox prefHeight="180.0" prefWidth="105.0" />
+                        <TextField fx:id="ProcessSizeTextField" prefHeight="25.0" prefWidth="90.0" promptText="Process Size">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <ChoiceBox fx:id="TypeOfAllocChoiceBox" prefWidth="90.0">
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </ChoiceBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="35.0" prefWidth="310.0">
+                     <children>
+                        <Button fx:id="ProcessAllocateButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Allocate">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="70.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Button fx:id="ProcessDeallocateButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Deallocate">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox prefHeight="270.0" prefWidth="210.0">
+               <children>
+                  <TableView maxWidth="-Infinity" prefHeight="200.0" prefWidth="200.0">
+                     <columns>
+                        <TableColumn fx:id="HoleStartAddressColumn" prefWidth="100.0" text="Hole Address" />
+                        <TableColumn fx:id="HoleSizeColumn" prefWidth="100.0" text="Hole Size" />
+                     </columns>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                     </VBox.margin>
+                  </TableView>
+                  <HBox prefHeight="32.0" prefWidth="310.0">
+                     <children>
+                        <TextField fx:id="HoleStartAddressTextField" prefHeight="25.0" prefWidth="90.0" promptText="Start Address">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="10.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                        <TextField fx:id="HoleSizeTextField" prefHeight="25.0" prefWidth="90.0" promptText="Hole Size">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="35.0" prefWidth="310.0">
+                     <children>
+                        <Button fx:id="HoleAllocateButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Allocate">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="65.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox fx:id="ChartHBox" prefHeight="180.0" prefWidth="750.0" />
+   </children>
+</VBox>
