@@ -36,7 +36,7 @@ public class Controller implements Initializable {
 
     int MemorySize = 1200;
     int NumberOfProcesses = 3;
-    int NumberOfHoles = 0;
+    int NumberOfHoles = 3;
 
     public GanttChart<Number, String> chart;
     public NumberAxis xAxis;
@@ -69,15 +69,16 @@ public class Controller implements Initializable {
     @FXML TableColumn <CPUProcess, Integer> HoleStartAddressColumn, HoleSizeColumn;
 
     @FXML TextField ProcessSizeTextField,HoleStartAddressTextField,HoleSizeTextField;
-    @FXML TextField MemorySizeTextField,NumberOfProcessesTextField,NumberOfHolesTextField;
+    @FXML TextField MemorySizeTextField;
+    @FXML TextField ProcessAddTextField;
 
     @FXML ChoiceBox TypeOfAllocChoiceBox;
 
     public void initialize(URL location, ResourceBundle resources){
 
         Processes.add(A);
-        Processes.add(B);
-        Processes.add(C);
+        //Processes.add(B);
+        //Processes.add(C);
         Holes.add(AA);
         Holes.add(BB);
         Holes.add(CC);
@@ -99,12 +100,14 @@ public class Controller implements Initializable {
             public void handle(ActionEvent event) {
                 try {
                     MemorySize = parseInt(MemorySizeTextField.getText());
-                    NumberOfProcesses = parseInt(NumberOfProcessesTextField.getText());
-                    NumberOfHoles = parseInt(NumberOfHolesTextField.getText());
                     buildGanttChart();
                 }
                 catch (NumberFormatException e){
-                    System.out.println("Must Enter All Three Input Data.");
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("Sorry! You must enter a valid memory size.");
+
+                    alert.showAndWait();
                 }
             }
         });
@@ -123,9 +126,15 @@ public class Controller implements Initializable {
                     Holes.add(hole);
                     HolesTable.getItems().add(hole);
                     buildGanttChart();
+
+                    NumberOfHoles++;
                 }
                 catch (NumberFormatException e){
-                    System.out.println("Must Enter All Hole Data.");
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("Oops! There is missing hole data.");
+
+                    alert.showAndWait();
                 }
                 HoleSizeTextField.clear();
                 HoleStartAddressTextField.clear();
@@ -145,12 +154,17 @@ public class Controller implements Initializable {
                     process.setTypeOfAlloc(TypeOfAllocChoiceBox.getValue().toString());
                     NumberOfProcesses++;
 
+                    process.setStartAddress(parseInt(ProcessAddTextField.getText()));//////////////////
                     ProcessesTable.getItems().add(process);
                     Processes.add(process);
                     buildGanttChart();
                 }
                 catch (NumberFormatException e){
-                    System.out.println("Must Enter All Process Data.");
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText("Oops! There is missing process data.");
+
+                    alert.showAndWait();
                 }
                 ProcessSizeTextField.clear();
             }
@@ -166,6 +180,7 @@ public class Controller implements Initializable {
                 processSelected = ProcessesTable.getSelectionModel().getSelectedItems();
                 processSelected.forEach(allProcesses::remove);
                 processSelected.forEach(Processes::remove);
+                chart.getData().clear();
                 buildGanttChart();
             }
         });
@@ -212,10 +227,14 @@ public class Controller implements Initializable {
         series.getData().add(new XYChart.Data(0, "",
                 new ExtraData((int) MemorySize, "status-gray")));
 
-        for(int i=0; i<Processes.size(); i++){
-            series.getData().add(new XYChart.Data(Processes.get(i).getStartAddress(), "",
-                    new ExtraData((int) Processes.get(i).getSize(), colors[i%10])));
+        if(Processes!=null){
+            for(int i=0; i<Processes.size(); i++){
+                series.getData().add(new XYChart.Data(Processes.get(i).getStartAddress(), "",
+                        new ExtraData((int) Processes.get(i).getSize(), colors[Processes.get(i).getId()%10])));
+            }
         }
+        else chart.getData().clear();
+
         for(int i=0; i<Holes.size(); i++){
             series.getData().add(new XYChart.Data(Holes.get(i).getStartAddress(), "",
                     new ExtraData((int) Holes.get(i).getSize(), "status-lavender")));

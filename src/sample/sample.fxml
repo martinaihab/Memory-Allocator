@@ -15,7 +15,7 @@
          <children>
             <VBox maxWidth="-Infinity" prefHeight="270.0" prefWidth="200.0">
                <children>
-                  <HBox prefHeight="100.0" prefWidth="200.0" />
+                  <HBox prefHeight="125.0" prefWidth="200.0" />
                   <HBox prefHeight="4.0" prefWidth="200.0">
                      <children>
                         <Label prefHeight="25.0" prefWidth="100.0" text="Memory Size:">
@@ -24,34 +24,6 @@
                            </HBox.margin>
                         </Label>
                         <TextField fx:id="MemorySizeTextField" prefHeight="25.0" prefWidth="80.0">
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </TextField>
-                     </children>
-                  </HBox>
-                  <HBox prefHeight="6.0" prefWidth="200.0">
-                     <children>
-                        <Label prefHeight="25.0" prefWidth="100.0" text="No. of Processes:">
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </Label>
-                        <TextField fx:id="NumberOfProcessesTextField" prefWidth="80.0">
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </TextField>
-                     </children>
-                  </HBox>
-                  <HBox prefHeight="9.0" prefWidth="200.0">
-                     <children>
-                        <Label prefHeight="25.0" prefWidth="100.0" text="No. of Holes">
-                           <HBox.margin>
-                              <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
-                           </HBox.margin>
-                        </Label>
-                        <TextField fx:id="NumberOfHolesTextField" prefHeight="25.0" prefWidth="80.0">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </HBox.margin>
@@ -79,7 +51,14 @@
                   </TableView>
                   <HBox prefHeight="32.0" prefWidth="310.0">
                      <children>
-                        <HBox prefHeight="180.0" prefWidth="105.0" />
+                        <HBox prefHeight="180.0" prefWidth="105.0">
+                           <children>
+                              <TextField fx:id="ProcessAddTextField" prefHeight="25.0" prefWidth="90.0" promptText="Process Add">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children></HBox>
                         <TextField fx:id="ProcessSizeTextField" prefHeight="25.0" prefWidth="90.0" promptText="Process Size">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
