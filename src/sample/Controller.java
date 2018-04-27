@@ -35,8 +35,9 @@ import static java.lang.Integer.parseInt;
 public class Controller implements Initializable {
 
     int MemorySize = 1200;
-    int NumberOfProcesses = 3;
+    int NumberOfProcesses = 1;
     int NumberOfHoles = 3;
+    int ProcessId = 1;
 
     public GanttChart<Number, String> chart;
     public NumberAxis xAxis;
@@ -105,8 +106,8 @@ public class Controller implements Initializable {
                 catch (NumberFormatException e){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
-                    alert.setContentText("Sorry! You must enter a valid memory size.");
-
+                    alert.setHeaderText("Invalid Memory Size");
+                    alert.setContentText("Please make sure to enter a valid memory size.");
                     alert.showAndWait();
                 }
             }
@@ -132,7 +133,8 @@ public class Controller implements Initializable {
                 catch (NumberFormatException e){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
-                    alert.setContentText("Oops! There is missing hole data.");
+                    alert.setHeaderText("Missing Hole Data");
+                    alert.setContentText("Please make sure to enter all hole data.");
 
                     alert.showAndWait();
                 }
@@ -149,9 +151,10 @@ public class Controller implements Initializable {
                 CPUProcess process = new CPUProcess();
 
                 try {
-                    process.setId(NumberOfProcesses);
+                    process.setId(ProcessId);
                     process.setSize(parseInt(ProcessSizeTextField.getText()));
                     process.setTypeOfAlloc(TypeOfAllocChoiceBox.getValue().toString());
+                    ProcessId++;
                     NumberOfProcesses++;
 
                     process.setStartAddress(parseInt(ProcessAddTextField.getText()));//////////////////
@@ -162,7 +165,8 @@ public class Controller implements Initializable {
                 catch (NumberFormatException e){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
-                    alert.setContentText("Oops! There is missing process data.");
+                    alert.setHeaderText("Missing Process Data");
+                    alert.setContentText("Please make sure to enter all process data.");
 
                     alert.showAndWait();
                 }
@@ -180,6 +184,7 @@ public class Controller implements Initializable {
                 processSelected = ProcessesTable.getSelectionModel().getSelectedItems();
                 processSelected.forEach(allProcesses::remove);
                 processSelected.forEach(Processes::remove);
+                NumberOfProcesses--;////////////////////////////////////
                 chart.getData().clear();
                 buildGanttChart();
             }
@@ -224,21 +229,25 @@ public class Controller implements Initializable {
 
         XYChart.Series series = new XYChart.Series();
         xAxis.setUpperBound(MemorySize);
-        series.getData().add(new XYChart.Data(0, "",
-                new ExtraData((int) MemorySize, "status-gray")));
 
-        if(Processes!=null){
-            for(int i=0; i<Processes.size(); i++){
+        if(NumberOfProcesses==0) {
+            chart.getData().clear();
+            series.getData().add(new XYChart.Data(0, "",
+                    new ExtraData((int) MemorySize, "status-gray")));
+        }
+        else {
+            series.getData().add(new XYChart.Data(0, "",
+                    new ExtraData((int) MemorySize, "status-gray")));
+            for (int i = 0; i < Processes.size(); i++) {
                 series.getData().add(new XYChart.Data(Processes.get(i).getStartAddress(), "",
-                        new ExtraData((int) Processes.get(i).getSize(), colors[Processes.get(i).getId()%10])));
+                        new ExtraData((int) Processes.get(i).getSize(), colors[Processes.get(i).getId() % 10])));
             }
         }
-        else chart.getData().clear();
-
-        for(int i=0; i<Holes.size(); i++){
+        for (int i = 0; i < Holes.size(); i++) {
             series.getData().add(new XYChart.Data(Holes.get(i).getStartAddress(), "",
                     new ExtraData((int) Holes.get(i).getSize(), "status-lavender")));
         }
+        //else chart.getData().clear();
         chart.getData().add(series);
     }
     private void initializeGanttChart() {
