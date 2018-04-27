@@ -6,6 +6,11 @@ public class CPUProcess {
     private String typeOfAlloc;
     private int startAddress;
 
+    public CPUProcess() {
+        id = size = startAddress = 0;
+        typeOfAlloc = "First-Fit";
+    }
+
     public CPUProcess(int id, int size, String typeOfAlloc) {
         this.id = id;
         this.size = size;
