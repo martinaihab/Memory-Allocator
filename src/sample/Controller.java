@@ -341,14 +341,8 @@ public class Controller implements Initializable {
                 break;
             }
         }
-        if (flag1 == 0){
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("No Free Space");
-            alert.setContentText("There is not enough memory to allocate the process. Try to de-allocate memory and re-allocate the process.");
+        if (flag1 == 0) showMemoryError();
 
-            alert.showAndWait();
-        }
     }
     public void Best_Fit_Allocate ( CPUProcess process1) {
         int ind = 0 ;
