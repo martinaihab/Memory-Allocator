@@ -114,15 +114,18 @@ public class Controller implements Initializable {
                 try {
                     hole.setSize(parseInt(HoleSizeTextField.getText()));
                     hole.setStartAddress(parseInt(HoleStartAddressTextField.getText()));
+                    if( (hole.getSize() + hole.getStartAddress() )>MemorySize)
+                        showHoleError();
+                    else {
+                        Holes.add(hole);
+                        executeCompaction();
+                        NumberOfHoles++;
 
-                    Holes.add(hole);
-                    executeCompaction();
-                    NumberOfHoles++;
-
-                    chart.getData().clear();
-                    buildGanttChart();
-                    HolesTable.getItems().clear();
-                    HolesTable.getItems().addAll(Holes);
+                        chart.getData().clear();
+                        buildGanttChart();
+                        HolesTable.getItems().clear();
+                        HolesTable.getItems().addAll(Holes);
+                    }
                 }
                 catch (NumberFormatException e){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -150,16 +153,20 @@ public class Controller implements Initializable {
                     process.setId(ProcessId);
                     process.setSize(parseInt(ProcessSizeTextField.getText()));
                     process.setTypeOfAlloc(TypeOfAllocChoiceBox.getValue().toString());
-                    AllocateProcess(process);
+                    if( (process.getSize() + process.getStartAddress() )>MemorySize)
+                        showProcessError();
+                    else {
+                        AllocateProcess(process);
 
-                    //process.setStartAddress(parseInt(ProcessAddTextField.getText()));//////////////////
+                        //process.setStartAddress(parseInt(ProcessAddTextField.getText()));//////////////////
 
-                    chart.getData().clear();
-                    buildGanttChart();
-                    ProcessesTable.getItems().clear();
-                    ProcessesTable.getItems().addAll(Processes);
-                    HolesTable.getItems().clear();
-                    HolesTable.getItems().addAll(Holes);
+                        chart.getData().clear();
+                        buildGanttChart();
+                        ProcessesTable.getItems().clear();
+                        ProcessesTable.getItems().addAll(Processes);
+                        HolesTable.getItems().clear();
+                        HolesTable.getItems().addAll(Holes);
+                    }
                 }
                 catch (NumberFormatException e){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -408,4 +415,25 @@ public class Controller implements Initializable {
 
         alert.showAndWait();
     }
+    public void showHoleError(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Hole Out of Range");
+        alert.setContentText("Hole cannot fit in memory.\nTry entering a smaller hole size or a different start address.");
+        alert.showAndWait();
+    }
+    public void showProcessError(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Process Out of Range");
+        alert.setContentText("Process cannot fit in memory.\nTry entering a smaller process size.");
+        alert.showAndWait();
+    }
+    /*public void showMemoryRangeWarning(){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warning");
+        alert.setHeaderText("Memory Range");
+        alert.setContentText("Memory may not fit allocated holes and processes.");
+        alert.showAndWait();
+    }*/
 }
