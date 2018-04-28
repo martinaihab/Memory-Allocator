@@ -121,7 +121,6 @@ public class Controller implements Initializable {
                 Hole hole = new Hole(NumberOfHoles);
 
                 try {
-                    ///ProcessID
                     hole.setSize(parseInt(HoleSizeTextField.getText()));
                     hole.setStartAddress(parseInt(HoleStartAddressTextField.getText()));
                     Holes.add(hole);
@@ -178,13 +177,15 @@ public class Controller implements Initializable {
         ProcessDeallocateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ObservableList<CPUProcess> processSelected, allProcesses;
-                allProcesses = ProcessesTable.getItems();
+                ObservableList<CPUProcess> processSelected;//, allProcesses;
+                //allProcesses = ProcessesTable.getItems();
                 processSelected = ProcessesTable.getSelectionModel().getSelectedItems();
                 Hole hole = new Hole (NumberOfHoles, processSelected.get(0).getStartAddress(),processSelected.get(0).getSize());
-                processSelected.forEach(allProcesses::remove);
+                //processSelected.forEach(allProcesses::remove);
                 processSelected.forEach(Processes::remove);
                 //if(NumberOfProcesses==0){Processes=new ArrayList<>(); ProcessesTable=new TableView();}
+                ProcessesTable.getItems().clear();
+                ProcessesTable.getItems().addAll(Processes);
                 Holes.add(hole);
                 NumberOfHoles++;
                 executeCompaction();
@@ -301,7 +302,7 @@ public class Controller implements Initializable {
 
         Collections.sort(Holes);
         for (int i = 1; i<Holes.size(); i++){
-            if( (Holes.get(i-1).getStartAddress()+Holes.get(i).getSize())
+            if( (Holes.get(i-1).getStartAddress()+Holes.get(i-1).getSize())
                 >=Holes.get(i).getStartAddress() ){
                 Holes.get(i-1).setSize(Holes.get(i).getStartAddress()-Holes.get(i-1).getStartAddress()+Holes.get(i).getSize());
                 Holes.remove(Holes.get(i));
