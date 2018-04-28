@@ -34,10 +34,10 @@ import static java.lang.Integer.parseInt;
 
 public class Controller implements Initializable {
 
-    int MemorySize = 1200;
-    int NumberOfProcesses = 1;
-    int NumberOfHoles = 3;
-    int ProcessId = 1;
+    int MemorySize = 0;
+    int NumberOfProcesses = 0;
+    int NumberOfHoles = 0;
+    int ProcessId = 0;
 
     public GanttChart<Number, String> chart;
     public NumberAxis xAxis;
@@ -54,9 +54,9 @@ public class Controller implements Initializable {
     CPUProcess B = new CPUProcess(1,120,"First-Fit",200);
     CPUProcess C = new CPUProcess(2,120,"First-Fit",380);
 
-    Hole AA = new Hole (180,10);
-    Hole BB = new Hole (320,30);
-    Hole CC = new Hole (360,15);
+    Hole AA = new Hole (0,180,10);
+    Hole BB = new Hole (1,320,30);
+    Hole CC = new Hole (2,360,15);
 
 
 
@@ -77,12 +77,12 @@ public class Controller implements Initializable {
 
     public void initialize(URL location, ResourceBundle resources){
 
-        Processes.add(A);
+        //Processes.add(A);
         //Processes.add(B);
         //Processes.add(C);
-        Holes.add(AA);
-        Holes.add(BB);
-        Holes.add(CC);
+        //Holes.add(AA);
+        //Holes.add(BB);
+        //Holes.add(CC);
 
         initializeInputButton();
         initializeProcessAllocateButton();
@@ -118,16 +118,15 @@ public class Controller implements Initializable {
         HoleAllocateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Hole hole = new Hole();
+                Hole hole = new Hole(NumberOfHoles);
 
                 try {
                     ///ProcessID
                     hole.setSize(parseInt(HoleSizeTextField.getText()));
                     hole.setStartAddress(parseInt(HoleStartAddressTextField.getText()));
                     Holes.add(hole);
-                    HolesTable.getItems().add(hole);
+                    executeCompaction();
                     buildGanttChart();
-
                     NumberOfHoles++;
                 }
                 catch (NumberFormatException e){
@@ -182,8 +181,13 @@ public class Controller implements Initializable {
                 ObservableList<CPUProcess> processSelected, allProcesses;
                 allProcesses = ProcessesTable.getItems();
                 processSelected = ProcessesTable.getSelectionModel().getSelectedItems();
+                //Hole hole = new Hole (NumberOfHoles, processSelected.get(0).getStartAddress(),processSelected.get(0).getSize());
                 processSelected.forEach(allProcesses::remove);
                 processSelected.forEach(Processes::remove);
+                //if(NumberOfProcesses==0){Processes=new ArrayList<>(); ProcessesTable=new TableView();}
+                //Holes.add(hole);
+                NumberOfHoles++;
+                executeCompaction();
                 NumberOfProcesses--;////////////////////////////////////
                 chart.getData().clear();
                 buildGanttChart();
@@ -203,21 +207,22 @@ public class Controller implements Initializable {
         ProcessSizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
         ProcessTypeOfAllocColumn.setCellValueFactory(new PropertyValueFactory<>("typeOfAlloc"));
 
-        ObservableList<CPUProcess> observableArrayList =
+        //ProcessesTable.getItems().addAll(Processes);//
+        /*ObservableList<CPUProcess> observableArrayList =
                 FXCollections.observableArrayList(Processes);
-        ProcessesTable.setItems(observableArrayList);
+        ProcessesTable.setItems(observableArrayList);*/
     }
     public void initializeHolesTable(){
 
         //table.setItems(getProcesses());
 
-
         HoleSizeColumn.setCellValueFactory(new PropertyValueFactory<>("size"));
         HoleStartAddressColumn.setCellValueFactory(new PropertyValueFactory<>("startAddress"));
 
-        ObservableList<Hole> observableArrayList =
+        //HolesTable.getItems().addAll(Holes);
+        /*ObservableList<Hole> observableArrayList =
                 FXCollections.observableArrayList(Holes);
-        HolesTable.setItems(observableArrayList);
+        HolesTable.setItems(observableArrayList);*/
 
     }
     private void buildGanttChart() {
@@ -232,6 +237,7 @@ public class Controller implements Initializable {
 
         if(NumberOfProcesses==0) {
             chart.getData().clear();
+            //Processes = new ArrayList<>();
             series.getData().add(new XYChart.Data(0, "",
                     new ExtraData((int) MemorySize, "status-gray")));
         }
@@ -290,6 +296,20 @@ public class Controller implements Initializable {
         chart.setMinWidth(700);
         //chart.setMaxWidth(RootVBox.getMaxWidth());
         chart.setLegendVisible(false);
+    }
+    public void executeCompaction(){
+
+        Collections.sort(Holes);
+        for (int i = 1; i<Holes.size(); i++){
+            if( (Holes.get(i-1).getStartAddress()+Holes.get(i).getSize())
+                >=Holes.get(i).getStartAddress() ){
+                Holes.get(i-1).setSize(Holes.get(i).getStartAddress()-Holes.get(i-1).getStartAddress()+Holes.get(i).getSize());
+                Holes.remove(Holes.get(i));
+                NumberOfHoles--;
+            }
+        }
+        HolesTable.getItems().clear();
+        HolesTable.getItems().addAll(Holes);
     }
 
 }

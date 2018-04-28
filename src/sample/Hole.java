@@ -1,14 +1,14 @@
 package sample;
 
-public class Hole {
+public class Hole implements Comparable<Hole>{
     private int startAddress;
     private int size;
 
-    public Hole() {
+    public Hole(int id) {
         size = startAddress = 0;
     }
 
-    public Hole(int startAddress, int size) {
+    public Hole(int id, int startAddress, int size) {
         this.size = size;
         this.startAddress = startAddress;
     }
@@ -27,6 +27,10 @@ public class Hole {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public int compareTo(Hole hole) {
+        return this.startAddress - hole.startAddress;
     }
 }
 
