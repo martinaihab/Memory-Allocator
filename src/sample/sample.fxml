@@ -51,14 +51,7 @@
                   </TableView>
                   <HBox prefHeight="32.0" prefWidth="310.0">
                      <children>
-                        <HBox prefHeight="180.0" prefWidth="105.0">
-                           <children>
-                              <TextField fx:id="ProcessAddTextField" prefHeight="25.0" prefWidth="90.0" promptText="Process Add">
-                                 <HBox.margin>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </HBox.margin>
-                              </TextField>
-                           </children></HBox>
+                        <HBox prefHeight="180.0" prefWidth="105.0" />
                         <TextField fx:id="ProcessSizeTextField" prefHeight="25.0" prefWidth="90.0" promptText="Process Size">
                            <HBox.margin>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

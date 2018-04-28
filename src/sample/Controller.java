@@ -50,15 +50,13 @@ public class Controller implements Initializable {
             "status-purple", "status-green", "status-deepskyblue",
             "status-tomato", "status-violet"};
 
-    CPUProcess A = new CPUProcess(0,120,"First-Fit",60);
+    /*CPUProcess A = new CPUProcess(0,120,"First-Fit",60);
     CPUProcess B = new CPUProcess(1,120,"First-Fit",200);
     CPUProcess C = new CPUProcess(2,120,"First-Fit",380);
 
-    Hole AA = new Hole (0,180,10);
-    Hole BB = new Hole (1,320,30);
-    Hole CC = new Hole (2,360,15);
-
-
+    Hole AA = new Hole (0,50,100);
+    Hole BB = new Hole (1,300,60);
+    Hole CC = new Hole (2,500,150);*/
 
     @FXML VBox RootVBox;
     @FXML HBox ChartHBox;
@@ -71,28 +69,20 @@ public class Controller implements Initializable {
 
     @FXML TextField ProcessSizeTextField,HoleStartAddressTextField,HoleSizeTextField;
     @FXML TextField MemorySizeTextField;
-    @FXML TextField ProcessAddTextField;
 
     @FXML ChoiceBox TypeOfAllocChoiceBox;
 
     public void initialize(URL location, ResourceBundle resources){
 
-        //Processes.add(A);
-        //Processes.add(B);
-        //Processes.add(C);
-        //Holes.add(AA);
-        //Holes.add(BB);
-        //Holes.add(CC);
-
-        initializeInputButton();
-        initializeProcessAllocateButton();
-        initializeProcessDeallocateButton();
-        initializeHoleAllocateButton();
-        initializeTypeOfAllocChoiceBox();
-        initializeProcessesTable();
-        initializeHolesTable();
-        initializeGanttChart();
-        buildGanttChart();
+        initializeInputButton();                //defined at line 89
+        initializeHoleAllocateButton();         //defined at line 109
+        initializeProcessAllocateButton();      //defined at line 144
+        initializeProcessDeallocateButton();    //defined at line 179
+        initializeTypeOfAllocChoiceBox();       //defined at line 204
+        initializeProcessesTable();             //defined at line 208
+        initializeHolesTable();                 //defined at line 221
+        initializeGanttChart();                 //defined at line 265
+        buildGanttChart();                      //defined at line 234
     }
 
     public void initializeInputButton(){
@@ -109,6 +99,7 @@ public class Controller implements Initializable {
                     alert.setHeaderText("Invalid Memory Size");
                     alert.setContentText("Please make sure to enter a valid memory size.");
                     alert.showAndWait();
+                    MemorySizeTextField.clear();
                 }
             }
         });
@@ -123,18 +114,25 @@ public class Controller implements Initializable {
                 try {
                     hole.setSize(parseInt(HoleSizeTextField.getText()));
                     hole.setStartAddress(parseInt(HoleStartAddressTextField.getText()));
+
                     Holes.add(hole);
                     executeCompaction();
-                    buildGanttChart();
                     NumberOfHoles++;
+
+                    chart.getData().clear();
+                    buildGanttChart();
+                    HolesTable.getItems().clear();
+                    HolesTable.getItems().addAll(Holes);
                 }
                 catch (NumberFormatException e){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText("Missing Hole Data");
-                    alert.setContentText("Please make sure to enter all hole data.");
+                    alert.setContentText("Please make sure to enter all hole data correctly.");
 
                     alert.showAndWait();
+                    HoleSizeTextField.clear();
+                    HoleStartAddressTextField.clear();
                 }
                 HoleSizeTextField.clear();
                 HoleStartAddressTextField.clear();
@@ -152,21 +150,25 @@ public class Controller implements Initializable {
                     process.setId(ProcessId);
                     process.setSize(parseInt(ProcessSizeTextField.getText()));
                     process.setTypeOfAlloc(TypeOfAllocChoiceBox.getValue().toString());
-                    ProcessId++;
-                    NumberOfProcesses++;
+                    AllocateProcess(process);
 
-                    process.setStartAddress(parseInt(ProcessAddTextField.getText()));//////////////////
-                    ProcessesTable.getItems().add(process);
-                    Processes.add(process);
+                    //process.setStartAddress(parseInt(ProcessAddTextField.getText()));//////////////////
+
+                    chart.getData().clear();
                     buildGanttChart();
+                    ProcessesTable.getItems().clear();
+                    ProcessesTable.getItems().addAll(Processes);
+                    HolesTable.getItems().clear();
+                    HolesTable.getItems().addAll(Holes);
                 }
                 catch (NumberFormatException e){
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Error");
                     alert.setHeaderText("Missing Process Data");
-                    alert.setContentText("Please make sure to enter all process data.");
+                    alert.setContentText("Please make sure to enter all process data correctly.");
 
                     alert.showAndWait();
+                    ProcessSizeTextField.clear();
                 }
                 ProcessSizeTextField.clear();
             }
@@ -177,21 +179,23 @@ public class Controller implements Initializable {
         ProcessDeallocateButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                ObservableList<CPUProcess> processSelected;//, allProcesses;
-                //allProcesses = ProcessesTable.getItems();
+                ObservableList<CPUProcess> processSelected;
                 processSelected = ProcessesTable.getSelectionModel().getSelectedItems();
                 Hole hole = new Hole (NumberOfHoles, processSelected.get(0).getStartAddress(),processSelected.get(0).getSize());
-                //processSelected.forEach(allProcesses::remove);
                 processSelected.forEach(Processes::remove);
-                //if(NumberOfProcesses==0){Processes=new ArrayList<>(); ProcessesTable=new TableView();}
-                ProcessesTable.getItems().clear();
-                ProcessesTable.getItems().addAll(Processes);
+                NumberOfProcesses--;
+
                 Holes.add(hole);
                 NumberOfHoles++;
                 executeCompaction();
-                NumberOfProcesses--;////////////////////////////////////
+
                 chart.getData().clear();
                 buildGanttChart();
+                ProcessesTable.getItems().clear();
+                ProcessesTable.getItems().addAll(Processes);
+                HolesTable.getItems().clear();
+                HolesTable.getItems().addAll(Holes);
+
             }
         });
     }
@@ -259,7 +263,6 @@ public class Controller implements Initializable {
     }
     private void initializeGanttChart() {
 
-
         xAxis = new NumberAxis();
         yAxis = new CategoryAxis();
 
@@ -307,10 +310,108 @@ public class Controller implements Initializable {
                 Holes.get(i-1).setSize(Holes.get(i).getStartAddress()-Holes.get(i-1).getStartAddress()+Holes.get(i).getSize());
                 Holes.remove(Holes.get(i));
                 NumberOfHoles--;
+                i--;
             }
         }
         HolesTable.getItems().clear();
         HolesTable.getItems().addAll(Holes);
     }
 
+    public void AllocateProcess(CPUProcess process){
+        if(process.getTypeOfAlloc()=="First-Fit") First_Fit_Allocate(process);
+        else if(process.getTypeOfAlloc()=="Best-Fit") Best_Fit_Allocate(process);
+        else if(process.getTypeOfAlloc()=="Worst-Fit") Worst_Fit_Allocate(process);
+        else System.out.println("Error with allocation");
+
+    }
+    public void First_Fit_Allocate (CPUProcess process1 )
+    {
+        int flag1 = 0;
+        for (int j = 0; j < Holes.size(); j++) {
+            if (Holes.get(j).getSize() >= process1.getSize()) {
+                process1.setStartAddress(Holes.get(j).getStartAddress());
+                flag1 = 1;
+                Holes.get(j).setSize(Holes.get(j).getSize()-process1.getSize());
+                if (Holes.get(j).getSize()==0)
+                    Holes.remove(Holes.get(j));
+                else Holes.get(j).setStartAddress(Holes.get(j).getStartAddress()+process1.getSize());
+                ProcessId++;
+                NumberOfProcesses++;
+                Processes.add(process1);
+                break;
+            }
+        }
+        if (flag1 == 0){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("No Free Space");
+            alert.setContentText("There is not enough memory to allocate the process. Try to de-allocate memory and re-allocate the process.");
+
+            alert.showAndWait();
+        }
+    }
+    public void Best_Fit_Allocate ( CPUProcess process1) {
+        int ind = 0 ;
+        int flag2 =0;
+        int min =0;
+        for (int j=0;j<Holes.size();j++)
+        {
+            if (Holes.get(j).getSize()>=process1.getSize()&&flag2==0)
+            {
+                ind=j;
+                min=Holes.get(ind).getSize();
+                flag2=1;
+            }
+            else if (Holes.get(j).getSize()>=process1.getSize()&&Holes.get(j).getSize()<min)
+            {
+                ind =j ;
+                min=Holes.get(ind).getSize();
+            }
+        }
+        if(flag2>0) {
+            process1.setStartAddress(Holes.get(ind).getStartAddress());
+            Holes.get(ind).setSize(Holes.get(ind).getSize()-process1.getSize());
+            if ( Holes.get(ind).getSize()==0)
+                Holes.remove(ind);
+            else Holes.get(ind).setStartAddress(Holes.get(ind).getStartAddress()+process1.getSize());
+            ProcessId++;
+            NumberOfProcesses++;
+            Processes.add(process1);
+        }
+        else showMemoryError();
+    }
+    public void Worst_Fit_Allocate (CPUProcess process1) {
+        int ind = 0;
+        int flag = 0;
+        int max = 0;
+        for (int j = 0; j < Holes.size(); j++) {
+            if (Holes.get(j).getSize() >= process1.getSize() && Holes.get(j).getSize() > max) {
+                flag = 1;
+                ind = j;
+                max = Holes.get(ind).getSize();
+            }
+        }
+        if (flag > 0) {
+            process1.setStartAddress(Holes.get(ind).getStartAddress());
+            Holes.get(ind).setSize(Holes.get(ind).getSize()-process1.getSize());
+            if (Holes.get(ind).getSize() == 0)
+                Holes.remove(Holes.get(ind));
+            else Holes.get(ind).setStartAddress(Holes.get(ind).getStartAddress()+process1.getSize());
+            ProcessId++;
+            NumberOfProcesses++;
+            Processes.add(process1);
+        }
+        else showMemoryError();
+    }
+
+    public void showMemoryError(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("No Free Space");
+        alert.setContentText("There is not enough memory to allocate the process." +
+                "\nTry to de-allocate memory or allocate more holes," +
+                " then re-allocate the process.");
+
+        alert.showAndWait();
+    }
 }
