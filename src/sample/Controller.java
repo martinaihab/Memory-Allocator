@@ -181,11 +181,11 @@ public class Controller implements Initializable {
                 ObservableList<CPUProcess> processSelected, allProcesses;
                 allProcesses = ProcessesTable.getItems();
                 processSelected = ProcessesTable.getSelectionModel().getSelectedItems();
-                //Hole hole = new Hole (NumberOfHoles, processSelected.get(0).getStartAddress(),processSelected.get(0).getSize());
+                Hole hole = new Hole (NumberOfHoles, processSelected.get(0).getStartAddress(),processSelected.get(0).getSize());
                 processSelected.forEach(allProcesses::remove);
                 processSelected.forEach(Processes::remove);
                 //if(NumberOfProcesses==0){Processes=new ArrayList<>(); ProcessesTable=new TableView();}
-                //Holes.add(hole);
+                Holes.add(hole);
                 NumberOfHoles++;
                 executeCompaction();
                 NumberOfProcesses--;////////////////////////////////////
